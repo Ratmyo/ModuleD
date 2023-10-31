@@ -7,7 +7,10 @@ Post
 {% endblock title %}
 
 {% block content %}
-    <h1>Все новости</h1>
+    <h1>Новости</h1>
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn btn-sm">Подписаться</a></p>
+    {% endif %}
 
     <hr>
 
@@ -25,15 +28,15 @@ Post
                 <td>Дата</td>
                 <td>Содержание</td>
                 <td>Действия</td>
+                <td>Категории</td>
 
             </tr>
 
-            {% for post in news %}
+            {% for post in category_news_list %}
             <tr>
                 <td>{{ post.title|censor }}</td>
                 <td>{{ post.dateCreation|date:'d M Y' }}</td>
                 <td>{{ post.text|truncatechars:20}}</td>
-
 
                 <td>
                 {% if post.categoryType == NW %}
@@ -52,6 +55,7 @@ Post
                     {% endif %}
                 {% endif %}
                 </td>
+                <td>{{ post.postCategory }}</td>
 
             </tr>
             {% endfor %}
@@ -60,9 +64,8 @@ Post
         <h2>Новостей нет!</h2>
     {% endif %}
 
-    {# Добавляем пагинацию на страницу #}
 
-   {# Информация о предыдущих страницах #}
+
    {% if page_obj.has_previous %}
        <a href="?page=1">1</a>
        {% if page_obj.previous_page_number != 1 %}
@@ -71,10 +74,8 @@ Post
        {% endif %}
    {% endif %}
 
-   {# Информация о текущей странице #}
    {{ page_obj.number }}
 
-   {# Информация о следующих страницах #}
    {% if page_obj.has_next %}
        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
        {% if paginator.num_pages != page_obj.next_page_number %}
