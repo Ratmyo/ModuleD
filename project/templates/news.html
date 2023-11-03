@@ -25,7 +25,7 @@ Post
                 <td>Дата</td>
                 <td>Содержание</td>
                 <td>Действия</td>
-
+                <td>Категории</td>
             </tr>
 
             {% for post in news %}
@@ -33,8 +33,6 @@ Post
                 <td>{{ post.title|censor }}</td>
                 <td>{{ post.dateCreation|date:'d M Y' }}</td>
                 <td>{{ post.text|truncatechars:20}}</td>
-
-
                 <td>
                 {% if post.categoryType == NW %}
                     {% if perms.newsapp.change_post %}
@@ -52,7 +50,11 @@ Post
                     {% endif %}
                 {% endif %}
                 </td>
-
+                <td>
+                    {% for postCategory in post.postCategory.all %}
+                        <a href="{% url 'category_list' postCategory.id %}">{{postCategory}}</a>
+                    {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </table>

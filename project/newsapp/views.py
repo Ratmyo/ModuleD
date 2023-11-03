@@ -120,14 +120,14 @@ class CategoryListView(ListView):
     context_object_name = 'category_news_list'
 
     def get_queryset(self):
-        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
-        queryset = Post.objects.filter(category=self.category).order_by('-date')
+        self.postCategory = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(postCategory=self.postCategory).order_by('-dateCreation')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_not_subcriber'] = self.request.user not in self.category.subscribers.all()
-        context['category'] = self.category
+        context['is_not_subscriber'] = self.request.user not in self.postCategory.subscribers.all()
+        context['postCategory'] = self.postCategory
         return context
 
 
@@ -138,34 +138,4 @@ def subscribe(request, pk):
     category.subscribers.add(user)
 
     message = 'Вы успешно подписались на рассылку новостей категории'
-    return render(request, 'subscribe.html', {'category': category, 'message': message})
-
-# @login_required
-# @csrf_protect
-# def subscriptions(request):
-#     if request.method == 'POST':
-#         category_id = request.POST.get('category_id')
-#         category = Category.objects.get(id=category_id)
-#         action = request.POST.get('action')
-#
-#         if action == 'subscribe':
-#             Subscription.objects.create(user=request.user, category=category)
-#         elif action == 'unsubscribe':
-#             Subscription.objects.filter(
-#                 user=request.user,
-#                 category=category,
-#             ).delete()
-#
-#     categories_with_subscriptions = Category.objects.annotate(
-#         user_subscribed=Exists(
-#             Subscription.objects.filter(
-#                 user=request.user,
-#                 category=OuterRef('pk'),
-#             )
-#         )
-#     ).order_by('name')
-#     return render(
-#         request,
-#         'subscriptions.html',
-#         {'categories': categories_with_subscriptions},
-#     )
+    return render(request, 'subscribe.html', {'postCategory': category, 'message': message})

@@ -7,27 +7,19 @@ Post
 {% endblock title %}
 
 {% block content %}
-    <h1>Новости</h1>
-    {% if is_not_subscriber %}
-        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn btn-sm">Подписаться</a></p>
-    {% endif %}
+    <h1>Подписки</h1>
+        {% if is_not_subscriber %}
+            <p class="text-center"><a href="{% url 'subscribe' postCategory.id %}">Подписаться</a></p>
+{% endif %}
 
     <hr>
 
-    {% if perms.newsapp.add_post %}
-    <a href="{% url 'news_create' %}">Добавить новость</a>
-    {% endif %}
-    {% if perms.newsapp.add_post %}
-    <a href="{% url 'articles_create' %}">Добавить статью</a>
-    {% endif %}
-
-    {% if news %}
+    {% if category_news_list %}
         <table>
             <tr>
                 <td>Заголовок</td>
                 <td>Дата</td>
                 <td>Содержание</td>
-                <td>Действия</td>
                 <td>Категории</td>
 
             </tr>
@@ -37,34 +29,17 @@ Post
                 <td>{{ post.title|censor }}</td>
                 <td>{{ post.dateCreation|date:'d M Y' }}</td>
                 <td>{{ post.text|truncatechars:20}}</td>
-
                 <td>
-                {% if post.categoryType == NW %}
-                    {% if perms.newsapp.change_post %}
-                    <a href="{% url 'news_update' pk=post.id %}">Изменить</a>
-                    {% endif %}
-                    {% if perms.newsapp.delete_post %}
-                    <a href="{% url 'news_delete' post.id %}">Удалить</a>
-                    {% endif %}
-                {% else %}
-                    {% if perms.newsapp.change_post %}
-                    <a href="{% url 'articles_update' pk=post.id %}">Изменить</a>
-                    {% endif %}
-                    {% if perms.newsapp.delete_post %}
-                    <a href="{% url 'articles_delete' post.id %}">Удалить</a>
-                    {% endif %}
-                {% endif %}
+                    {% for postCategory in post.postCategory.all %}
+                        <a href="{% url 'category_list' postCategory.id %}">{{postCategory}}</a>
+                    {% endfor %}
                 </td>
-                <td>{{ post.postCategory }}</td>
-
             </tr>
             {% endfor %}
         </table>
     {% else %}
         <h2>Новостей нет!</h2>
     {% endif %}
-
-
 
    {% if page_obj.has_previous %}
        <a href="?page=1">1</a>
