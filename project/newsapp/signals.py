@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 
 def send_notifications(preview, pk, title, subscribers):
     html_content = render_to_string(
-        'post_created_email.html',
+        'registration/post_created_email.html',
         {
             'text': preview,
             'link': f'{settings.SITE_URL}{pk}',
