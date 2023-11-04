@@ -21,8 +21,8 @@ def my_job():
     # Your job processing logic here...
     today = datetime.datetime.now()
     last_week = today - datetime.timedelta(days=7)
-    posts = Post.objects.filter(date__gte=last_week)
-    categories = set(posts.values_list('category__name', flat=True))
+    posts = Post.objects.filter(dateCreation__gte=last_week)
+    categories = set(posts.values_list('postCategory__name', flat=True))
     subscribers = set(Category.objects.filter(name__in=categories).values_list('subscribers__email', flat=True))
     html_content = render_to_string(
         'registration/daily_post.html',
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(second="*/10"),  # Every 10 seconds
+            trigger=CronTrigger(day_of_week="fri", hour="18", minute="00"),  # Every 10 seconds
             id="my_job",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
