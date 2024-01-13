@@ -188,22 +188,19 @@ CACHES = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'style': '{',
     'formatters': {
-        'formdebug': {
+        'formbug': {
             'format': '%(asctime)s %(levelname)s %(message)s', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
-            'style': '{',
         },
         'formwarning': {
             'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s', #Для сообщений WARNING и выше дополнительно должен выводиться путь к источнику события (используется аргумент pathname в форматировании)
-            'style': '{',
         },
         'formerrorcritical': {
             'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s', #для сообщений ERROR и CRITICAL еще должен выводить стэк ошибки (аргумент exc_info)
-            'style': '{',
         },
         'forminfo': {
             'format': '%(asctime)s %(levelname)s %(module)s %(message)s', #с указанием времени, уровня логирования, модуля, в котором возникло сообщение (аргумент module) и само сообщение
-            'style': '{',
         },
     },
     'filters': {
@@ -219,7 +216,7 @@ LOGGING = {
             'level': 'DEBUG', #В консоль должны выводиться все сообщения уровня DEBUG и выше
             'filters': ['require_debug_true'], #в консоль сообщения отправляются только при DEBUG = True
             'class': 'logging.StreamHandler',
-            'formatter': 'formdebug', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
+            'formatter': 'formbug', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
         },
         'mail_admins': {
             'level': 'ERROR', #На почту должны отправляться сообщения уровней ERROR
@@ -245,7 +242,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'security.log',
             'formatter': 'forminfo', #предполагает время, уровень логирования, модуль и сообщение
-        }
+        },
     },
     'loggers': {
         'django': {
@@ -282,6 +279,6 @@ LOGGING = {
             'handlers': ['security'], #четвертый пункт задания
             'level': 'WARNING',
             'propagate': False, #В файл security.log должны попадать только сообщения, связанные с безопасностью
-        }
-    }
+        },
+    },
 }
