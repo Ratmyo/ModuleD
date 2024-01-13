@@ -177,3 +177,111 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'formdebug': {
+            'format': '%(asctime)s %(levelname)s %(message)s', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
+            'style': '{',
+        },
+        'formwarning': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s', #Для сообщений WARNING и выше дополнительно должен выводиться путь к источнику события (используется аргумент pathname в форматировании)
+            'style': '{',
+        },
+        'formerrorcritical': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s', #для сообщений ERROR и CRITICAL еще должен выводить стэк ошибки (аргумент exc_info)
+            'style': '{',
+        },
+        'forminfo': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s', #с указанием времени, уровня логирования, модуля, в котором возникло сообщение (аргумент module) и само сообщение
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue', #в консоль сообщения отправляются только при DEBUG = True
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse', #на почту и в файл general.log — только при DEBUG = False
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG', #В консоль должны выводиться все сообщения уровня DEBUG и выше
+            'filters': ['require_debug_true'], #в консоль сообщения отправляются только при DEBUG = True
+            'class': 'logging.StreamHandler',
+            'formatter': 'formdebug', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
+        },
+        'mail_admins': {
+            'level': 'ERROR', #На почту должны отправляться сообщения уровней ERROR
+            'filters': ['require_debug_false'], #а почту и в файл general.log — только при DEBUG = False
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'formwarning', #по формату, как в errors.log, но без стэка ошибок.
+        },
+        'general': {
+            'level': 'INFO', #В файл general.log должны выводиться сообщения уровня INFO
+            'filters': ['require_debug_false'], #а почту и в файл general.log — только при DEBUG = False
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'forminfo', #с указанием времени, уровня логирования, модуля, в котором возникло сообщение (аргумент module) и само сообщение
+        },
+        'errors': {
+            'level': 'ERROR', #В файл errors.log должны выводиться сообщения только уровня ERROR и CRITICAL
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'formerrorcritical', #указывается время, уровень логирования, само сообщение, путь к источнику сообщения и стэк ошибки
+        },
+        'security': {
+            'level': 'WARNING', #В файл security.log должны попадать только сообщения, связанные с безопасностью
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'forminfo', #предполагает время, уровень логирования, модуль и сообщение
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'], #первый пункт задания
+            'level': 'DEBUG',
+            'propagate': True, #все сообщения уровня DEBUG и выше
+        },
+        'django': {
+            'handlers': ['general'], #второй пункт задания
+            'level': 'INFO',
+            'propagate': True, #должны выводиться сообщения уровня INFO и выше
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'errors'], #пятый и третий пункты задания
+            'level': 'ERROR',
+            'propagate': True, #уровней ERROR и выше
+        },
+        'django.server': {
+            'handlers': ['mail_admins', 'errors'], #пятый и третий пункты задания
+            'level': 'ERROR',
+            'propagate': True, #уровней ERROR и выше
+        },
+        'django.template': {
+            'handlers': ['errors'], #третий пункт задания
+            'level': 'ERROR',
+            'propagate': True, #только уровня ERROR и CRITICAL
+        },
+        'django.db.backends': {
+            'handlers': ['errors'], #третий пункт задания
+            'level': 'ERROR',
+            'propagate': True, #только уровня ERROR и CRITICAL
+        },
+        'django.security': {
+            'handlers': ['security'], #четвертый пункт задания
+            'level': 'WARNING',
+            'propagate': False, #В файл security.log должны попадать только сообщения, связанные с безопасностью
+        }
+    }
+}
