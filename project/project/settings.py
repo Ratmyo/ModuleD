@@ -218,6 +218,18 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'formbug', #все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения
         },
+        'console_warning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'formwarning', #Для сообщений WARNING и выше дополнительно должен выводиться путь к источнику события (используется аргумент pathname в форматировании)
+        },
+        'console_errors_critical': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'formerrorcritical', #еще должен выводить стэк ошибки (аргумент exc_info)
+        },
         'mail_admins': {
             'level': 'ERROR', #На почту должны отправляться сообщения уровней ERROR
             'filters': ['require_debug_false'], #а почту и в файл general.log — только при DEBUG = False
@@ -246,38 +258,28 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'], #первый пункт задания
+            'handlers': ['console', 'console_warning', 'console_errors_critical', 'general'], #первый пункт задания + второй
             'level': 'DEBUG',
             'propagate': True, #все сообщения уровня DEBUG и выше
         },
-        'django': {
-            'handlers': ['general'], #второй пункт задания
-            'level': 'INFO',
-            'propagate': True, #должны выводиться сообщения уровня INFO и выше
-        },
         'django.request': {
             'handlers': ['mail_admins', 'errors'], #пятый и третий пункты задания
-            'level': 'ERROR',
             'propagate': True, #уровней ERROR и выше
         },
         'django.server': {
             'handlers': ['mail_admins', 'errors'], #пятый и третий пункты задания
-            'level': 'ERROR',
             'propagate': True, #уровней ERROR и выше
         },
         'django.template': {
             'handlers': ['errors'], #третий пункт задания
-            'level': 'ERROR',
             'propagate': True, #только уровня ERROR и CRITICAL
         },
         'django.db.backends': {
             'handlers': ['errors'], #третий пункт задания
-            'level': 'ERROR',
             'propagate': True, #только уровня ERROR и CRITICAL
         },
         'django.security': {
             'handlers': ['security'], #четвертый пункт задания
-            'level': 'WARNING',
             'propagate': False, #В файл security.log должны попадать только сообщения, связанные с безопасностью
         },
     },
